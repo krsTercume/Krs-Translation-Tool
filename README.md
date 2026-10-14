@@ -1,83 +1,150 @@
-# AGS Translator (.tra / .dta)
 
-A small, dependency-free desktop tool (Python + Tkinter) to translate **Adventure Game Studio** text in bulk.
-It opens three kinds of files:
-- plain-text `.tra` (alternating *source line / translation line*),
-- **compiled binary `.tra`** (`AGSTranslation` header, encrypted pairs),
-- compiled game data **`.dta`** (e.g. `game28.dta`): the dialogue / text strings inside the compiled scripts are
-  replaced and every code reference is relocated, so translations may have a different length.
-Bulk workflow with smart copy/paste; Source and Translation columns can both be edited.
+# Krs Game Translator
+
+A free, open-source desktop tool for translating game localization files. It brings multiple file formats into one interface and provides a practical workflow for translating text with external translation tools.
+
+The project focuses on safe file handling, bulk translation, text validation, and Azerbaijani language support.
 
 > A tool for fan-made translations. Not affiliated with any game developer or publisher.
-> Do not commit or redistribute game text; `.tra` files are git-ignored (only `examples/Sample.tra`, invented, is included).
+
+## Supported Formats
+
+### Adventure Game Studio (AGS)
+
+- **Plain-text `.tra`** — Reads and writes alternating source and translation lines while preserving untouched lines, line endings, and byte-order marks where supported.
+- **Compiled binary `.tra`** — Supports AGS translation files using the `AGSTranslation` format.
+- **Compiled game data `.dta`** — Designed to edit translatable string literals in compiled AGS game data while preserving other data and updating string references where necessary.
+- **`.crm`** — Support for compatible AGS game data files.
+
+### Ren'Py
+
+- **`.rpy`** — Works with Ren'Py script and translation files, allowing source text to be translated and exported into a separate language directory.
+- Preserves translation structure, variables, tags, and supported placeholders.
+- Supports configurable translation language names.
+
+**Compatibility note:** Support can vary depending on the game, file version, encoding, and script structure. Test exported files with the target game before distributing a patch.
 
 ## Features
-- Reads/writes the plain-text `.tra`: untouched lines are written **byte-for-byte**, CRLF/BOM kept.
-- Voice prefixes such as `&3001 ` are kept apart from the text, so a translator never sees or breaks them.
-- `%s`-style placeholders, `<..>` / `@..@` tokens and `[` line breaks are checked by **Validate**.
-- Smart bulk workflow: *Select next N + copy* -> paste into any translator -> copy result -> *Paste*
-  (line-count mismatch warning, optional numbered mode, undo restores a whole paste).
-- Rubber-band mouse selection, filters (not done / voiced / problems), multiple files, autosave, backup, themes.
-- Optional *char replace on export* (e.g. `ə>ä ı>i`) for characters your game font cannot draw.
-- Handles the quirk where some characters are stored as `U+FFxx` (shown as normal letters).
-- Never modifies the original: backup on open, export only to a *different* folder.
 
-## Install & run
-Python 3.8+ with Tkinter. Windows: double-click `run.bat`; Linux/macOS: `./run.sh`. No `pip install`.
+### Bulk Translation Workflow
 
-## Workflow
-1. **Open .tra**.
-2. Set *Select N*, press **Select next N + copy**, translate the copied English text elsewhere.
-3. Copy the result, press **Paste (Ctrl+V)**. Ctrl+Z undoes a whole paste.
-4. **Validate**, then **Export** to a different folder and copy the file into the game.
-Lines count as *done* once you paste/edit them (or mark them with *Mark done*).
+- Select the next N entries and copy them in one operation.
+- Paste translated text from an external translation tool.
+- Warns when the number of translated lines does not match the selection.
+- Optional numbered copy mode.
+- Undo an entire paste operation with a single `Ctrl+Z`.
+- Edit source and translation text directly.
 
-## Notes
-- The engine matches entries by the **source** text. Editing the Source column is possible, but the
-  game will then no longer match that entry (Validate warns).
-- Whether letters like `ə`, `ğ`, `ş` appear in game depends on the game's font.
-- Test one edited line in the game first (especially `ä ö ü` with the *Latin-1 chars* option).
+### Text Validation
 
-## Structure
+- Detects missing or modified placeholders.
+- Checks supported voice prefixes and special text markers.
+- Detects line-break inconsistencies.
+- Warns about potentially unsafe quotes in Ren'Py text.
+- Helps identify encoding and character compatibility problems.
+
+### Safe File Handling
+
+- Keeps the original files unchanged.
+- Creates backups when opening files.
+- Exports translated files to a separate output directory.
+- Re-reads and validates generated output before writing it.
+- Aborts export when validation detects critical inconsistencies.
+
+### Azerbaijani Language Support
+
+- Azerbaijani and English interface options.
+- Additional character input buttons for letters such as `ə`, `ğ`, `ı`, `ö`, `ş`, `ü`, and `ç`.
+- Character replacement options for games whose fonts do not support Azerbaijani characters.
+- Configurable output encoding where supported.
+
+### Additional Features
+
+- Multiple-file workflow.
+- Filters for untranslated entries, voiced entries, and potential problems.
+- Autosave and backup options.
+- Themes and configurable settings.
+- Source editing and translation progress tracking.
+
+## Installation
+
+Requirements:
+
+- Python 3.8 or newer, depending on the selected runtime and supported dependencies.
+- Tkinter for the desktop interface.
+
+On Windows, run:
+
+```bat
+run.bat
 ```
-src/main.py            entry point (language choice on first launch)
-src/gtt/               core package, no GUI: model, project, validation, i18n
-src/gtt/formats/       one module per format (.tra, .dta/.crm, binary .tra, Ren'Py)
-src/gtt/gui/           Tkinter window and Settings dialog
-src/gtt/locales/       interface translations (az.json; add <code>.json to add a language)
-tests/                 headless tests + GUI smoke test (mocked Tk)
-examples/              invented sample
-```
-Run tests: `python tests/test_core.py` and `python tests/gui_smoke.py`
 
-Interface language (Azərbaycan / English) is asked on first launch and can be changed in Settings.
+On Linux or macOS, run:
+
+```bash
+./run.sh
+```
+
+The project is designed to run without installing additional packages through `pip`, provided the required Python components are available.
+
+## Basic Workflow
+
+1. Open a supported translation or game data file.
+2. Choose the number of entries to translate.
+3. Select **Select next N + copy**.
+4. Translate the copied text using your preferred external translation tool.
+5. Copy the translated result and use **Paste** in the application.
+6. Review the translated entries and run **Validate**.
+7. Export to a different folder.
+8. Test the exported files in the target game.
+
+Use `Ctrl+Z` to undo supported editing operations. Always keep the original game files backed up.
+
+## Important Notes
+
+- Preserve placeholders, variables, voice prefixes, control tags, and special formatting.
+- Editing source text can prevent the game from matching an entry to its original string.
+- Azerbaijani characters may require a compatible game font and encoding.
+- Some legacy game engines have restrictions on text length, encoding, or supported characters.
+- Export validation cannot guarantee that every game will load the translated files correctly.
+
+## Project Structure
+
+```text
+src/
+  main.py
+  gtt/
+    formats/
+    gui/
+    locales/
+
+tests/
+examples/
+README.md
+LICENSE
+```
+
+The exact structure may vary between releases.
+
+## Testing
+
+Run the available tests with:
+
+```bash
+python tests/test_core.py
+python tests/gui_smoke.py
+```
+
+Test coverage and results depend on the current version of the project.
+
+## Interface Language
+
+The interface supports Azerbaijani and English. The language can be selected on first launch and changed in Settings.
 
 ## License
-MIT
 
-## .dta notes
-- Only string literals inside the compiled scripts are edited; everything else is copied unchanged. The file is parsed,
-  rebuilt and re-read before it is written (every string reference is checked). It is tested byte-exact on a real game file
-  (no changes -> identical output), but the engine itself was not run here: **test in the game and keep a backup**.
-- Choose the *Text encoding*: `utf-8` for characters like ə (needs an engine/font that supports it) or `cp1252`
-  (use *Char replace*, e.g. `ə>ä`).
+This project is released under the MIT License.
 
+## Disclaimer
 
-## Ren'Py translation files (.rpy)
-
-Open the files from a game's `game/tl/<language>/` folder (for example `tl/english/script.rpy`).
-The tool shows the existing text (usually English), you translate it, and **Export** writes the same files
-with `translate <your language> ...` (set the name in "Ren'Py language", default `azerbaijani`).
-Put the exported files into a NEW folder `game/tl/<your language>/`; the original files stay untouched.
-
-- Keep `[variables]`, `{tags}` and `%s`-style placeholders; a `"` inside a text must be written `\"`.
-- Validate warns about lost placeholders and unescaped quotes.
-- Whether a letter such as the Azerbaijani schwa is shown depends on the game's font.
-
-## Selecting, clearing and settings
-
-- **Delete** (or the **Clear (Del)** button) empties the translation of every selected line; **Ctrl+Z** undoes it.
-  For `.dta`, `.crm` and Ren'Py files an empty translation keeps the original text in the exported file.
-- **Right-click** a selection for: Clear translation, Revert to original, Copy source -> translation, Mark done / not done, Copy, Paste.
-- **Settings...** collects every option in one dialog: typing shortcuts, source editing, numbered copy, output encoding,
-  character replacement and the Ren'Py language name.
+Kurosawa Translator is an independent fan-localization utility. It does not include commercial game assets or game scripts. Users are responsible for ensuring that their use and distribution of translated files complies with applicable licenses and laws.
