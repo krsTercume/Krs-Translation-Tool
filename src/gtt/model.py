@@ -12,7 +12,6 @@ class Settings:
         self.charmap = ""           # e.g. "ə>ä Ə>Ä ı>i İ>I ğ>g Ğ>G ş>s Ş>S"
         self.out_encoding = "utf-8"  # text for .dta / compiled .tra: "utf-8" or "cp1252"
         self.renpy_lang = "azerbaijani"  # Ren'Py: language name written after "translate"
-        self.type_w = True          # typing w / W inserts the schwa letters
 
     def to_dict(self):
         return dict(self.__dict__)

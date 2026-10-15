@@ -44,3 +44,12 @@ for lang in ("en", "az"):
 
 import main  # noqa: E402,F401
 print("main imports ok")
+
+# schwa key of an Azerbaijani layout arrives as '?' with keycode 192
+from types import SimpleNamespace as NS
+ent = MagicMock(); ent.selection_present.return_value = False
+app._type_key(ent, NS(state=0, keysym="??", char="?", keycode=192)); ent.insert.assert_called_with("insert", "ə")
+app._type_key(ent, NS(state=1, keysym="??", char="?", keycode=192)); ent.insert.assert_called_with("insert", "Ə")
+ent.insert.reset_mock()
+assert app._type_key(ent, NS(state=0, keysym="question", char="?", keycode=191)) is None and not ent.insert.called
+print("schwa key ok")

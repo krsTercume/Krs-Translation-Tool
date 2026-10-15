@@ -1,4 +1,4 @@
-"""Game Text Translator core package."""
+"""Krs Translation Editor core package."""
 from .common import *  # noqa
 from .model import Settings, Entry  # noqa
 from .project import Project  # noqa

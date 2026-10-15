@@ -15,7 +15,7 @@
  "Character not available in cp1252: {c} (use 'Char replace' or UTF-8)": "cp1252-də olmayan simvol: {c} ('Simvol əvəzləmə' və ya UTF-8 istifadə edin)",
  "none": "yoxdur",
  "{n} lines will be written ({mode}).": "{n} sətir yazılacaq ({mode}).",
- "Game Text Translator": "Game Text Translator",
+ "Krs Translation Editor": "Krs Translation Editor",
  "Open .tra/.dta/.crm/.rpy": "Aç .tra/.dta/.crm/.rpy",
  "Open folder (.crm/.rpy)": "Qovluq aç (.crm/.rpy)",
  "Save": "Yadda saxla",

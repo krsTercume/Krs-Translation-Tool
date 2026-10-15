@@ -16,7 +16,6 @@ class SettingsDialog(tk.Toplevel):
         self.resizable(False, False)
         self.configure(bg=app.T["bg"])
         s = app.p.settings
-        self.v_w = tk.BooleanVar(value=app.v_w.get())
         self.v_src = tk.BooleanVar(value=app.v_src.get())
         self.v_num = tk.BooleanVar(value=app.v_num.get())
         self.v_style = tk.StringVar(value=app.v_style.get())
@@ -33,7 +32,6 @@ class SettingsDialog(tk.Toplevel):
         ttk.Combobox(r0, textvariable=self.v_ui, width=14, state="readonly", values=list(LANGUAGES.values())).pack(side="left")
 
         g = ttk.LabelFrame(body, text=_("Editing"), padding=8); g.pack(fill="x", pady=(0, 8))
-        ttk.Checkbutton(g, text=_("Type w = \u0259 and W = \u018f (w is not an Azerbaijani letter)"), variable=self.v_w).pack(anchor="w")
         ttk.Checkbutton(g, text=_("Allow editing the Source text (the game then no longer matches that entry)"),
                         variable=self.v_src).pack(anchor="w")
         ttk.Checkbutton(g, text=_("Numbered copy (\"1. text\") when copying lines"), variable=self.v_num).pack(anchor="w")
@@ -68,12 +66,12 @@ class SettingsDialog(tk.Toplevel):
         self.focus_set()
 
     def reset(self):
-        self.v_w.set(True); self.v_src.set(False); self.v_num.set(False)
+        self.v_src.set(False); self.v_num.set(False)
         self.v_style.set("unicode"); self.v_enc.set("utf-8"); self.v_map.set(""); self.v_lang.set("azerbaijani")
 
     def ok(self):
         a = self.app
-        a.v_w.set(self.v_w.get()); a.v_src.set(self.v_src.get()); a.v_num.set(self.v_num.get())
+        a.v_src.set(self.v_src.get()); a.v_num.set(self.v_num.get())
         a.v_style.set(self.v_style.get()); a.v_enc.set(self.v_enc.get())
         a.v_map.set(self.v_map.get()); a.v_lang.set(self.v_lang.get())
         a.apply_settings()

@@ -18,7 +18,7 @@ class App:
     def __init__(self, root):
         self.root = root
         self.app_dir = APP
-        root.title(_("Game Text Translator"))
+        root.title(_("Krs Translation Editor"))
         root.geometry("1280x740")
         self.p = Project(APP)
         self.shown = []
@@ -65,14 +65,7 @@ class App:
         ttk.Button(bar, text=_("Mark not done"), command=lambda: self.mark(False)).pack(side="left", padx=2)
         ttk.Button(bar, text=_("Clear (Del)"), command=self.clear_text_sel).pack(side="left", padx=(12, 2))
 
-        self.v_w = tk.BooleanVar(value=s.type_w); self.v_lang = tk.StringVar(value=s.renpy_lang)
-
-        bar3 = ttk.Frame(r); bar3.pack(fill="x", padx=6, pady=(2, 0))
-        ttk.Label(bar3, text=_("Insert letter (click while editing a cell, or Alt+key):")).pack(side="left")
-        for ch in "\u0259\u018f\u0131\u0130\u011f\u011e\u015f\u015e\u00e7\u00c7\u00f6\u00d6\u00fc\u00dc":
-            b = tk.Button(bar3, text=ch, width=2, takefocus=0, font=("Segoe UI", 10),
-                          command=lambda c=ch: self.insert_char(c))
-            b.pack(side="left", padx=1)
+        self.v_lang = tk.StringVar(value=s.renpy_lang)
 
         pan = ttk.PanedWindow(r, orient="vertical"); pan.pack(fill="both", expand=True, padx=6, pady=4)
         cols = ("n", "file", "voice", "orig", "tr", "len", "st")
@@ -146,7 +139,6 @@ class App:
         s.latin_style, s.charmap = self.v_style.get(), self.v_map.get()
         s.out_encoding = self.v_enc.get()
         s.renpy_lang = self.v_lang.get().strip() or "azerbaijani"
-        s.type_w = self.v_w.get()
         self.p.dirty = True
 
     def sel_uids(self):
@@ -337,12 +329,13 @@ class App:
                     "Iabovedot": "\u0130", "U0131": "\u0131", "U0130": "\u0130"}
 
     def _type_key(self, ent, ev):
-        """Direct typing: the schwa key of an Azerbaijani layout, or 'w'/'W' (not an Azerbaijani letter) as a shortcut."""
+        """Direct typing: the schwa key of an Azerbaijani keyboard layout."""
         if ev.state & 0x4 or ev.state & 0x20000:   # Ctrl / Alt: leave to normal shortcuts
             return None
         ch = self.KEYSYM_CHARS.get(ev.keysym)
-        if ch is None and self.v_w.get():
-            ch = {"w": "\u0259", "W": "\u018f"}.get(ev.char)
+        if ch is None and ev.keycode == 192 and ev.char == "?":
+            # Windows delivers the Azerbaijani schwa key as a plain '?' (keycode 192); Shift or CapsLock -> capital
+            ch = "\u018f" if (ev.state & 0x1) != (ev.state & 0x2) // 2 else "\u0259"
         if ch is None: return None
         try:
             if ent.selection_present(): ent.delete("sel.first", "sel.last")
@@ -381,16 +374,6 @@ class App:
     ALT_KEYS = {"e": "\u0259", "E": "\u018f", "i": "\u0131", "I": "\u0130", "g": "\u011f", "G": "\u011e",
                 "s": "\u015f", "S": "\u015e", "c": "\u00e7", "C": "\u00c7", "o": "\u00f6", "O": "\u00d6",
                 "u": "\u00fc", "U": "\u00dc"}
-
-    def insert_char(self, ch):
-        ent = getattr(self, "_edit_entry", None)
-        try:
-            if ent is not None and ent.winfo_exists():
-                ent.insert("insert", ch); ent.focus_set()
-                return
-        except tk.TclError:
-            pass
-        self._to_clip(ch); self.info.config(text=_("'{ch}' copied to the clipboard - paste it with Ctrl+V into a cell being edited.", ch=ch))
 
     def _hist(self, uids):
         for u in uids or []: self._update_row(u)

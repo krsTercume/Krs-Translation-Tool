@@ -1,4 +1,4 @@
-"""Game Text Translator - entry point."""
+"""Krs Translation Editor - entry point."""
 import os
 import sys
 import tkinter as tk
@@ -13,7 +13,7 @@ APP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # repo root:
 def choose_language():
     """First launch: ask once (Azərbaycan / English). Returns the code, or None if the window was closed."""
     root = tk.Tk()
-    root.title("Game Text Translator")
+    root.title("Krs Translation Editor")
     root.resizable(False, False)
     res = {"code": None}
     f = ttk.Frame(root, padding=20); f.pack()
